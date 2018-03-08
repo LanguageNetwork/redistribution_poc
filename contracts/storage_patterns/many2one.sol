@@ -1,7 +1,7 @@
 // Reference
 // https://medium.com/@robhitchens/enforcing-referential-integrity-in-ethereum-smart-contracts-a9ab1427ff42
 
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.21;
 
 
 contract Owned {
@@ -11,6 +11,9 @@ contract Owned {
 }
 
 contract NodeRelationship is Owned {
+    // For zero_state comparison
+    bytes32 zero_state;
+
 
     // Dataset struct
     struct DataSet {
@@ -26,18 +29,19 @@ contract NodeRelationship is Owned {
     // Raw data struct
     struct RawDataStruct {
         uint rawDataListPointer;
-        bytes32 dataSetId;
+        bytes32[] dataSetIds;
         mapping(bytes32 => uint) dataSetIdPointers;
     }
 
     mapping(bytes32 => RawDataStruct) public rawDataStructs;
     bytes32[] public rawDataList;
 
-    // Log & DApp
+    // Event
     event LogNewDataSet(address sender, bytes32 dataSetId);
-    event LogNewRawData(address sender, bytes32 rawDataId, bytes32 dataSetId);
+    event LogNewRawData(address sender, bytes32 rawDataId);
     event LogDataSetDeleted(address sender, bytes32 dataSetId);
     event LogRawDataDeleted(address sender, bytes32 rawDataId);
+
 
     function getDataSetCount()  public view returns(uint dataSetCount) {return dataSetList.length;}
     function getRawDataCount() public view returns(uint rawDataCount){return rawDataList.length;}
@@ -52,6 +56,26 @@ contract NodeRelationship is Owned {
         return rawDataList[rawDataStructs[rawDataId].rawDataListPointer]==rawDataId;
     }
 
+    // events for modifier
+    event InvalidDataSetId(address sender, bytes32 dataSetId);
+    event InvalidRawDataId(address sender, bytes32 rawDataId);
+
+    // Modifier
+    modifier validId(bytes32 dataSetId, bytes32 rawDataId) {
+        // For zero_state
+        if(dataSetId != zero_state && !isDataSet(dataSetId)) {
+            emit InvalidDataSetId(msg.sender, dataSetId);
+            revert();
+        }
+
+        if(rawDataId != zero_state && !isRawData(rawDataId)){
+            emit InvalidRawDataId(msg.sender, rawDataId);
+            revert();
+        }
+
+        // require(dataSetId == zero_state || isDataSet(dataSetId));
+        // require(rawDataId == zero_state || isRawData(rawDataId));
+    }
 
     function getDataSetRawDataIdCount(bytes32 dataSetId) public view returns(uint rawDataCount) {
         require(isDataSet(dataSetId));
@@ -66,20 +90,28 @@ contract NodeRelationship is Owned {
     // Insert
 
     function createDataSet(bytes32 dataSetId) public returns(bool success) {
-        require(isDataSet(dataSetId));
+        require(!isDataSet(dataSetId));
         dataSetStructs[dataSetId].DataSetPointer = dataSetList.push(dataSetId)-1;
         emit LogNewDataSet(msg.sender, dataSetId);
         return true;
     }
 
-    function createRawData(bytes32 rawDataId, bytes32 dataSetId) public returns(bool success) {
-        require(isDataSet(dataSetId));
+    function createRawData(bytes32 rawDataId) public returns(bool success) {
         require(!isRawData(rawDataId));
-
         rawDataStructs[rawDataId].rawDataListPointer = rawDataList.push(rawDataId)-1;
-        rawDataStructs[rawDataId].dataSetId = dataSetId;
+        emit LogNewRawData(msg.sender, rawDataId);
+        return true;
+
+        // How to make relationship
+        // rawDataStructs[rawDataId].dataSetId = dataSetId;
+        // dataSetStructs[dataSetId].rawDataIdPointers[rawDataId] = dataSetStructs[dataSetId].rawDataIds.push(rawDataId) - 1;
+    }
+
+    function makeRelation(bytes32 dataSetId, bytes32 rawDataId) public validId returns(bool success) {
+        // Add relationship between raw data and dataset
+
+        rawDataStructs[rawDataId].dataSetIdPointers[dataSetId] = rawDataStructs[rawDataId].dataSetIds.push(dataSetId) - 1;
         dataSetStructs[dataSetId].rawDataIdPointers[rawDataId] = dataSetStructs[dataSetId].rawDataIds.push(rawDataId) - 1;
-        emit LogNewRawData(msg.sender, rawDataId, dataSetId);
         return true;
     }
 
@@ -98,26 +130,26 @@ contract NodeRelationship is Owned {
         return true;
     }
 
-    function deleteRawData(bytes32 rawDataId) public returns(bool success) {
-        require(isRawData(rawDataId));
+     function deleteRawData(bytes32 rawDataId) public returns(bool success) {
+         require(isRawData(rawDataId));
 
-        // delete from the RawData table
-        uint rowToDelete = rawDataStructs[rawDataId].rawDataListPointer;
-        bytes32 keyToMove = rawDataList[rawDataList.length-1];
-        rawDataList[rowToDelete] = keyToMove;
-        rawDataStructs[rawDataId].rawDataListPointer = rowToDelete;
-        rawDataList.length--;
+         // delete from the RawData table
+         uint rowToDelete = rawDataStructs[rawDataId].rawDataListPointer;
+         bytes32 keyToMove = rawDataList[rawDataList.length-1];
+         rawDataList[rowToDelete] = keyToMove;
+         rawDataStructs[rawDataId].rawDataListPointer = rowToDelete;
+         rawDataList.length--;
 
-        // we ALSO have to delete this key from the list in the ONE that was joined to this RawData
-        bytes32 dataSetId = rawDataStructs[rawDataId].dataSetId; // it's still there, just not dropped from index
-        rowToDelete = dataSetStructs[dataSetId].rawDataIdPointers[rawDataId];
-        keyToMove = dataSetStructs[dataSetId].rawDataIds[dataSetStructs[dataSetId].rawDataIds.length-1];
-        dataSetStructs[dataSetId].rawDataIds[rowToDelete] = keyToMove;
-        dataSetStructs[dataSetId].rawDataIdPointers[keyToMove] = rowToDelete;
-        dataSetStructs[dataSetId].rawDataIds.length--;
-        emit LogRawDataDeleted(msg.sender, rawDataId);
-        return true;
-    }
+         // we ALSO have to delete this key from the list in the ONE that was joined to this RawData
+         bytes32 dataSetId = rawDataStructs[rawDataId].dataSetId; // it's still there, just not dropped from index
+         rowToDelete = dataSetStructs[dataSetId].rawDataIdPointers[rawDataId];
+         keyToMove = dataSetStructs[dataSetId].rawDataIds[dataSetStructs[dataSetId].rawDataIds.length-1];
+         dataSetStructs[dataSetId].rawDataIds[rowToDelete] = keyToMove;
+         dataSetStructs[dataSetId].rawDataIdPointers[keyToMove] = rowToDelete;
+         dataSetStructs[dataSetId].rawDataIds.length--;
+         emit LogRawDataDeleted(msg.sender, rawDataId);
+         return true;
+     }
 
 }
 
