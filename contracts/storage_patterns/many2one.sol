@@ -39,8 +39,8 @@ contract NodeRelationship is Owned {
     event LogDataSetDeleted(address sender, bytes32 dataSetId);
     event LogRawDataDeleted(address sender, bytes32 rawDataId);
 
-    function getDataSetCount()  public constant returns(uint dataSetCount) {return dataSetList.length;}
-    function getRawDataCount() public constant returns(uint rawDataCount){return rawDataList.length;}
+    function getDataSetCount()  public view returns(uint dataSetCount) {return dataSetList.length;}
+    function getRawDataCount() public view returns(uint rawDataCount){return rawDataList.length;}
 
     function isDataSet(bytes32 dataSetId) public view returns(bool isIndeed) {
         if(dataSetList.length==0) return false;
@@ -53,12 +53,12 @@ contract NodeRelationship is Owned {
     }
 
 
-    function getDataSetRawDataIdCount(bytes32 dataSetId) public constant returns(uint rawDataCount) {
+    function getDataSetRawDataIdCount(bytes32 dataSetId) public view returns(uint rawDataCount) {
         require(isDataSet(dataSetId));
         return dataSetStructs[dataSetId].rawDataIds.length;
     }
 
-    function getDataSetRawDataIdAtIndex(bytes32 dataSetId, uint row) public constant returns(bytes32 rawDataKey) {
+    function getDataSetRawDataIdAtIndex(bytes32 dataSetId, uint row) public view returns(bytes32 rawDataKey) {
         require(isDataSet(dataSetId));
         return dataSetStructs[dataSetId].rawDataIds[row];
     }
