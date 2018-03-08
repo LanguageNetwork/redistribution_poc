@@ -17,19 +17,8 @@ contract TestNodeRelationship {
     Assert.equal(1000, expected, "Comparing Integer");
   }
 
-  function testWhy() public {
+  function testInitialWallet() public {
     NodeRelationship node = NodeRelationship(DeployedAddresses.NodeRelationship());
   }
-
-  function testInitialOwnerSetting() public {
-    NodeRelationship node = NodeRelationship(DeployedAddresses.NodeRelationship());
-
-    Logging(node.owner());
-
-    address expected = DeployedAddresses.NodeRelationship();
-
-    Assert.equal(node.owner(), expected, "Owner address should be same with contract address which deployed first");
-  }
-
 
 }
