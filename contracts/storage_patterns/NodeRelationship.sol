@@ -9,7 +9,7 @@ contract NodeRelationship{
 
     address public owner;
 
-    function NodeRelationship() internal {  // constructor
+    function NodeRelationship() public {  // constructor
         owner = msg.sender;
     }
 
@@ -114,26 +114,26 @@ contract NodeRelationship{
         return true;
     }
 
-     function deleteRawData(bytes32 rawDataId) public returns(bool success) {
-         require(isRawData(rawDataId));
+     // function deleteRawData(bytes32 rawDataId) public returns(bool success) {
+     //     require(isRawData(rawDataId));
 
-         // delete from the RawData table
-         uint rowToDelete = rawDataStructs[rawDataId].rawDataListPointer;
-         bytes32 keyToMove = rawDataList[rawDataList.length-1];
-         rawDataList[rowToDelete] = keyToMove;
-         rawDataStructs[rawDataId].rawDataListPointer = rowToDelete;
-         rawDataList.length--;
+     //     // delete from the RawData table
+     //     uint rowToDelete = rawDataStructs[rawDataId].rawDataListPointer;
+     //     bytes32 keyToMove = rawDataList[rawDataList.length-1];
+     //     rawDataList[rowToDelete] = keyToMove;
+     //     rawDataStructs[rawDataId].rawDataListPointer = rowToDelete;
+     //     rawDataList.length--;
 
-         // we ALSO have to delete this key from the list in the ONE that was joined to this RawData
-         bytes32 dataSetId = rawDataStructs[rawDataId].dataSetId; // it's still there, just not dropped from index
-         rowToDelete = dataSetStructs[dataSetId].rawDataIdPointers[rawDataId];
-         keyToMove = dataSetStructs[dataSetId].rawDataIds[dataSetStructs[dataSetId].rawDataIds.length-1];
-         dataSetStructs[dataSetId].rawDataIds[rowToDelete] = keyToMove;
-         dataSetStructs[dataSetId].rawDataIdPointers[keyToMove] = rowToDelete;
-         dataSetStructs[dataSetId].rawDataIds.length--;
-         LogRawDataDeleted(msg.sender, rawDataId);
-         return true;
-     }
+     //     // we ALSO have to delete this key from the list in the ONE that was joined to this RawData
+     //     bytes32 dataSetId = rawDataStructs[rawDataId].dataSetId; // it's still there, just not dropped from index
+     //     rowToDelete = dataSetStructs[dataSetId].rawDataIdPointers[rawDataId];
+     //     keyToMove = dataSetStructs[dataSetId].rawDataIds[dataSetStructs[dataSetId].rawDataIds.length-1];
+     //     dataSetStructs[dataSetId].rawDataIds[rowToDelete] = keyToMove;
+     //     dataSetStructs[dataSetId].rawDataIdPointers[keyToMove] = rowToDelete;
+     //     dataSetStructs[dataSetId].rawDataIds.length--;
+     //     LogRawDataDeleted(msg.sender, rawDataId);
+     //     return true;
+     // }
 
 }
 
