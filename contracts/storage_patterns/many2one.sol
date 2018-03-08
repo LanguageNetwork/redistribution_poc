@@ -6,8 +6,8 @@ pragma solidity ^0.4.11;
 
 contract Owned {
     address public owner;
-    modifier onlyOwner {if(msg.sender != owner) throw;_;}
-    function Owned() {owner=msg.sender;}
+    modifier onlyOwner {require(msg.sender == owner);_;}
+    function Owned() internal {owner=msg.sender;}
 }
 
 contract NodeRelationship is Owned {
@@ -26,7 +26,7 @@ contract NodeRelationship is Owned {
     // Raw data struct
     struct RawDataStruct {
         uint rawDataListPointer;
-        bytes32[] dataSetIds;
+        bytes32 dataSetId;
         mapping(bytes32 => uint) dataSetIdPointers;
     }
 
@@ -54,50 +54,52 @@ contract NodeRelationship is Owned {
 
 
     function getDataSetRawDataIdCount(bytes32 dataSetId) public constant returns(uint rawDataCount) {
-        if(!isDataSet(dataSetId)) throw;
+        require(isDataSet(dataSetId));
         return dataSetStructs[dataSetId].rawDataIds.length;
     }
 
     function getDataSetRawDataIdAtIndex(bytes32 dataSetId, uint row) public constant returns(bytes32 rawDataKey) {
-        if(!isDataSet(dataSetId)) throw;
+        require(isDataSet(dataSetId));
         return dataSetStructs[dataSetId].rawDataIds[row];
     }
 
     // Insert
 
-    function createDataSet(bytes32 dataSetId) onlyOwner returns(bool success) {
-        if(isDataSet(dataSetId)) throw;
+    function createDataSet(bytes32 dataSetId) public returns(bool success) {
+        require(isDataSet(dataSetId));
         dataSetStructs[dataSetId].DataSetPointer = dataSetList.push(dataSetId)-1;
-        LogNewDataSet(msg.sender, dataSetId);
+        emit LogNewDataSet(msg.sender, dataSetId);
         return true;
     }
 
-    function createRawData(bytes32 rawDataId, bytes32 dataSetId) onlyOwner returns(bool success) {
-        if(!isDataSet(dataSetId)) throw;
-        if(isRawData(rawDataId)) throw;
+    function createRawData(bytes32 rawDataId, bytes32 dataSetId) public returns(bool success) {
+        require(isDataSet(dataSetId));
+        require(!isRawData(rawDataId));
+
         rawDataStructs[rawDataId].rawDataListPointer = rawDataList.push(rawDataId)-1;
         rawDataStructs[rawDataId].dataSetId = dataSetId;
         dataSetStructs[dataSetId].rawDataIdPointers[rawDataId] = dataSetStructs[dataSetId].rawDataIds.push(rawDataId) - 1;
-        LogNewRawData(msg.sender, rawDataId, dataSetId);
+        emit LogNewRawData(msg.sender, rawDataId, dataSetId);
         return true;
     }
 
     // Delete
 
-    function deleteDataSet(bytes32 dataSetId) onlyOwner returns(bool succes) {
-        if(!isDataSet(dataSetId)) throw;
-        if(dataSetStructs[dataSetId].rawDataIds.length>0) throw; // this would break referential integrity
+    function deleteDataSet(bytes32 dataSetId) public returns(bool succes) {
+        require(isDataSet(dataSetId));
+        require(!(dataSetStructs[dataSetId].rawDataIds.length>0));
+
         uint rowToDelete = dataSetStructs[dataSetId].DataSetPointer;
         bytes32 keyToMove = dataSetList[dataSetList.length-1];
         dataSetList[rowToDelete] = keyToMove;
         dataSetStructs[keyToMove].DataSetPointer = rowToDelete;
         dataSetList.length--;
-        LogDataSetDeleted(msg.sender, dataSetId);
+        emit LogDataSetDeleted(msg.sender, dataSetId);
         return true;
     }
 
-    function deleteRawData(bytes32 rawDataId) onlyOwner returns(bool success) {
-        if(!isRawData(rawDataId)) throw; // non-existant key
+    function deleteRawData(bytes32 rawDataId) public returns(bool success) {
+        require(isRawData(rawDataId));
 
         // delete from the RawData table
         uint rowToDelete = rawDataStructs[rawDataId].rawDataListPointer;
@@ -113,7 +115,7 @@ contract NodeRelationship is Owned {
         dataSetStructs[dataSetId].rawDataIds[rowToDelete] = keyToMove;
         dataSetStructs[dataSetId].rawDataIdPointers[keyToMove] = rowToDelete;
         dataSetStructs[dataSetId].rawDataIds.length--;
-        LogRawDataDeleted(msg.sender, rawDataId);
+        emit LogRawDataDeleted(msg.sender, rawDataId);
         return true;
     }
 
