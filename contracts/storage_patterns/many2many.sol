@@ -64,12 +64,12 @@ contract NodeRelationship is Owned {
     modifier validId(bytes32 dataSetId, bytes32 rawDataId) {
         // For zero_state
         if(dataSetId != zero_state && !isDataSet(dataSetId)) {
-            emit InvalidDataSetId(msg.sender, dataSetId);
+            InvalidDataSetId(msg.sender, dataSetId);
             revert();
         }
 
         if(rawDataId != zero_state && !isRawData(rawDataId)){
-            emit InvalidRawDataId(msg.sender, rawDataId);
+            InvalidRawDataId(msg.sender, rawDataId);
             revert();
         }
 
@@ -92,14 +92,14 @@ contract NodeRelationship is Owned {
     function createDataSet(bytes32 dataSetId) public returns(bool success) {
         require(!isDataSet(dataSetId));
         dataSetStructs[dataSetId].DataSetPointer = dataSetList.push(dataSetId)-1;
-        emit LogNewDataSet(msg.sender, dataSetId);
+        LogNewDataSet(msg.sender, dataSetId);
         return true;
     }
 
     function createRawData(bytes32 rawDataId) public returns(bool success) {
         require(!isRawData(rawDataId));
         rawDataStructs[rawDataId].rawDataListPointer = rawDataList.push(rawDataId)-1;
-        emit LogNewRawData(msg.sender, rawDataId);
+        LogNewRawData(msg.sender, rawDataId);
         return true;
 
         // How to make relationship
@@ -126,7 +126,7 @@ contract NodeRelationship is Owned {
         dataSetList[rowToDelete] = keyToMove;
         dataSetStructs[keyToMove].DataSetPointer = rowToDelete;
         dataSetList.length--;
-        emit LogDataSetDeleted(msg.sender, dataSetId);
+        LogDataSetDeleted(msg.sender, dataSetId);
         return true;
     }
 
@@ -147,7 +147,7 @@ contract NodeRelationship is Owned {
          dataSetStructs[dataSetId].rawDataIds[rowToDelete] = keyToMove;
          dataSetStructs[dataSetId].rawDataIdPointers[keyToMove] = rowToDelete;
          dataSetStructs[dataSetId].rawDataIds.length--;
-         emit LogRawDataDeleted(msg.sender, rawDataId);
+         LogRawDataDeleted(msg.sender, rawDataId);
          return true;
      }
 
