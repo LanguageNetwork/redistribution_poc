@@ -1,16 +1,18 @@
 // Reference
 // https://medium.com/@robhitchens/enforcing-referential-integrity-in-ethereum-smart-contracts-a9ab1427ff42
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.19;
 
 
-contract Owned {
+contract NodeRelationship{
+    // Admin stuff
+
     address public owner;
-    modifier onlyOwner {require(msg.sender == owner);_;}
-    function Owned() internal {owner=msg.sender;}
-}
 
-contract NodeRelationship is Owned {
+    function NodeRelationship() internal {  // constructor
+        owner = msg.sender;
+    }
+
     // For zero_state comparison
     bytes32 zero_state;
 
@@ -56,26 +58,6 @@ contract NodeRelationship is Owned {
         return rawDataList[rawDataStructs[rawDataId].rawDataListPointer]==rawDataId;
     }
 
-    // events for modifier
-    event InvalidDataSetId(address sender, bytes32 dataSetId);
-    event InvalidRawDataId(address sender, bytes32 rawDataId);
-
-    // Modifier
-    modifier validId(bytes32 dataSetId, bytes32 rawDataId) {
-        // For zero_state
-        if(dataSetId != zero_state && !isDataSet(dataSetId)) {
-            InvalidDataSetId(msg.sender, dataSetId);
-            revert();
-        }
-
-        if(rawDataId != zero_state && !isRawData(rawDataId)){
-            InvalidRawDataId(msg.sender, rawDataId);
-            revert();
-        }
-
-        // require(dataSetId == zero_state || isDataSet(dataSetId));
-        // require(rawDataId == zero_state || isRawData(rawDataId));
-    }
 
     function getDataSetRawDataIdCount(bytes32 dataSetId) public view returns(uint rawDataCount) {
         require(isDataSet(dataSetId));
@@ -107,8 +89,10 @@ contract NodeRelationship is Owned {
         // dataSetStructs[dataSetId].rawDataIdPointers[rawDataId] = dataSetStructs[dataSetId].rawDataIds.push(rawDataId) - 1;
     }
 
-    function makeRelation(bytes32 dataSetId, bytes32 rawDataId) public validId returns(bool success) {
+    function makeRelation(bytes32 dataSetId, bytes32 rawDataId) public returns(bool success) {
         // Add relationship between raw data and dataset
+        require(isDataSet(dataSetId));
+        require(isRawData(rawDataId));
 
         rawDataStructs[rawDataId].dataSetIdPointers[dataSetId] = rawDataStructs[rawDataId].dataSetIds.push(dataSetId) - 1;
         dataSetStructs[dataSetId].rawDataIdPointers[rawDataId] = dataSetStructs[dataSetId].rawDataIds.push(rawDataId) - 1;
