@@ -1,0 +1,17 @@
+version: 2
+## Customize the test machine
+machine:
+  python:
+    version: 3.5.3
+
+## Customize dependencies
+dependencies:
+  override:
+    - curl -sL https://deb.nodesource.com/setup_9.x | bash
+    - apt install -y nodejs npm
+    - npm install ganache-cli truffle
+    - ganache-cli &
+
+test:
+  override:
+    - truffle test
