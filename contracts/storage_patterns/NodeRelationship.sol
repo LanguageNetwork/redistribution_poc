@@ -29,13 +29,13 @@ contract NodeRelationship {
 
 
     // Raw data struct
-    struct RawDataStruct {
+    struct RawData {
         uint rawDataListPointer;
         bytes32[] dataSetIds;
         mapping(bytes32 => uint) dataSetIdPointers;
     }
 
-    mapping(bytes32 => RawDataStruct) public rawDataStructs;
+    mapping(bytes32 => RawData) public rawDataStructs;
     bytes32[] public rawDataList;
 
     // Event
@@ -65,9 +65,9 @@ contract NodeRelationship {
         return dataSetStructs[dataSetId].rawDataIds.length;
     }
 
-    function getDataSetRawDataIdAtIndex(bytes32 dataSetId, uint row) public view returns (bytes32 rawDataKey) {
-        require(isDataSet(dataSetId));
-        return dataSetStructs[dataSetId].rawDataIds[row];
+    function getRawDataDataSetIdCount(bytes32 rawDataId) public view returns (uint dataSetCount) {
+        require(isRawData(rawDataId));
+        return rawDataStructs[rawDataId].dataSetIds.length;
     }
 
     // Insert
