@@ -102,39 +102,41 @@ contract NodeRelationship {
 
     // Delete
 
-    function deleteDataSet(bytes32 dataSetId) public returns (bool succes) {
+    function deleteDataSet(bytes32 dataSetId) public returns (bool success) {
         require(isDataSet(dataSetId));
-        require(!(dataSetStructs[dataSetId].rawDataIds.length > 0));
+        require(!(dataSetStructs[dataSetId].rawDataIds.length > 0)); // 남은 relationship 이 있을 경우 revert
 
-        uint rowToDelete = dataSetStructs[dataSetId].DataSetPointer;
-        bytes32 keyToMove = dataSetList[dataSetList.length - 1];
-        dataSetList[rowToDelete] = keyToMove;
-        dataSetStructs[keyToMove].DataSetPointer = rowToDelete;
-        dataSetList.length--;
+        uint rowToDelete = dataSetStructs[dataSetId].DataSetPointer;  // DataSet list 의 포인터. dataset struct 들어있음
+        bytes32 keyToMove = dataSetList[dataSetList.length - 1];  // 가장 마지막 dataset struct
+        dataSetList[rowToDelete] = keyToMove;  // 삭제하고 싶은 raw 의 데이터를 가장 마지막 struct 로 덮어씀
+        dataSetStructs[keyToMove].DataSetPointer = rowToDelete;  // 가장 마지막 struct 의 포인터를 덮여진 위치로 덮어씀
+        dataSetList.length--;  // datasetList 길이를 1만큼 감소시킴
         LogDataSetDeleted(msg.sender, dataSetId);
         return true;
     }
 
-    // function deleteRawData(bytes32 rawDataId) public returns(bool success) {
-    //     require(isRawData(rawDataId));
+     function deleteRawData(bytes32 rawDataId) public returns(bool success) {
+         require(isRawData(rawDataId));
+         require(!(rawDataStructs[rawDataId].dataSetIds.length > 0)); // 남은 relationship 이 있을 경우 revert
 
-    //     // delete from the RawData table
-    //     uint rowToDelete = rawDataStructs[rawDataId].rawDataListPointer;
-    //     bytes32 keyToMove = rawDataList[rawDataList.length-1];
-    //     rawDataList[rowToDelete] = keyToMove;
-    //     rawDataStructs[rawDataId].rawDataListPointer = rowToDelete;
-    //     rawDataList.length--;
+         uint rowToDelete = rawDataStructs[rawDataId].rawDataListPointer; // Raw Data list 의 포인터. raw data struct 들어있음
+         bytes32 keyToMove = rawDataList[rawDataList.length-1];  // 가장 마지막 raw data struct
+         rawDataList[rowToDelete] = keyToMove; // struct 덮어쓰기
+         rawDataStructs[rawDataId].rawDataListPointer = rowToDelete; // 포인터 덮어쓰기
+         rawDataList.length--; // 마지막 element 삭제
 
-    //     // we ALSO have to delete this key from the list in the ONE that was joined to this RawData
-    //     bytes32 dataSetId = rawDataStructs[rawDataId].dataSetId; // it's still there, just not dropped from index
-    //     rowToDelete = dataSetStructs[dataSetId].rawDataIdPointers[rawDataId];
-    //     keyToMove = dataSetStructs[dataSetId].rawDataIds[dataSetStructs[dataSetId].rawDataIds.length-1];
-    //     dataSetStructs[dataSetId].rawDataIds[rowToDelete] = keyToMove;
-    //     dataSetStructs[dataSetId].rawDataIdPointers[keyToMove] = rowToDelete;
-    //     dataSetStructs[dataSetId].rawDataIds.length--;
-    //     LogRawDataDeleted(msg.sender, rawDataId);
-    //     return true;
-    // }
+         // we ALSO have to delete this key from the list in the ONE that was joined to this RawData
+
+         // Delete relationship
+         // bytes32[] dataSetId = rawDataStructs[rawDataId].dataSetIds; // it's still there, just not dropped from index
+         // rowToDelete = dataSetStructs[dataSetId].rawDataIdPointers[rawDataId];
+         // keyToMove = dataSetStructs[dataSetId].rawDataIds[dataSetStructs[dataSetId].rawDataIds.length-1];
+         // dataSetStructs[dataSetId].rawDataIds[rowToDelete] = keyToMove;
+         // dataSetStructs[dataSetId].rawDataIdPointers[keyToMove] = rowToDelete;
+         // dataSetStructs[dataSetId].rawDataIds.length--;
+         // LogRawDataDeleted(msg.sender, rawDataId);
+         return true;
+     }
 
 }
 
