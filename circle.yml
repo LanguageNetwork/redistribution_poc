@@ -18,7 +18,7 @@ jobs:
                 command: |
                     curl -sL https://deb.nodesource.com/setup_9.x | bash
                     apt install nodejs git -y
-                    npm install ganache-cli truffle
+                    npm install ganache-cli truffle -g
 
             - run:
                 name: run ganache
