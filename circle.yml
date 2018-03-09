@@ -8,6 +8,11 @@ jobs:
             LANG: C.UTF-8
         steps:
             - run:
+                name: install pre-dependencies
+                command: |
+                    apt update
+                    apt install curl -y
+            - run:
                 name: install dependencies
                 command: |
                     curl -sL https://deb.nodesource.com/setup_9.x | bash
