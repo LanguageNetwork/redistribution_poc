@@ -1,0 +1,27 @@
+version: 2
+jobs:
+    build:
+        docker:
+            - image: ubuntu:16.04
+        environment:
+            LC_ALL: C.UTF-8
+            LANG: C.UTF-8
+        steps:
+            - checkout
+            - run:
+                name: install pre-dependencies
+                command: |
+                    apt update
+                    apt install curl -y
+            - run:
+                name: install dependencies
+                command: |
+                    curl -sL https://deb.nodesource.com/setup_9.x | bash
+                    apt install nodejs git -y
+                    npm install ganache-cli truffle -g
+
+            - run:
+                name: run test
+                command: |
+                  ganache-cli &
+                  truffle test
