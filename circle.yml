@@ -1,17 +1,27 @@
 version: 2
-## Customize the test machine
-machine:
-  python:
-    version: 3.5.3
+jobs:
+    build:
+        docker:
+            - image: ubuntu:16.04
+        environment:
+            LC_ALL: C.UTF-8
+            LANG: C.UTF-8
+        steps:
+            - run:
+                name: install dependencies
+                command: |
+                    curl -sL https://deb.nodesource.com/setup_9.x | bash
+                    apt install -y nodejs npm
+                    npm install ganache-cli truffle
 
-## Customize dependencies
-dependencies:
-  override:
-    - curl -sL https://deb.nodesource.com/setup_9.x | bash
-    - apt install -y nodejs npm
-    - npm install ganache-cli truffle
-    - ganache-cli &
+            - run:
+                name: run ganache
+                command: |
+                  ganache-cli &
 
-test:
-  override:
-    - truffle test
+            - checkout
+
+            - run:
+                name: install dependencies
+                command: |
+                    truffle test
