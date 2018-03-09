@@ -9,16 +9,17 @@ import "../contracts/storage_patterns/NodeRelationship.sol";
 
 
 contract TestNodeRelationship {
-  event Logging(address asdf);
+    event Logging(address asdf);
 
-  function testTruffleTest() public {
-    uint expected = 1000;
+    function testTruffleTest() public {
+        uint expected = 1000;
 
-    Assert.equal(1000, expected, "Comparing Integer");
-  }
+        Assert.equal(1000, expected, "Comparing Integer");
+    }
 
-  function testInitialWallet() public {
-    NodeRelationship node = NodeRelationship(DeployedAddresses.NodeRelationship());
-  }
+    function testInitialWallet() public {
+        NodeRelationship node = NodeRelationship(DeployedAddresses.NodeRelationship());
+
+    }
 
 }
