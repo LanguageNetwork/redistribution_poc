@@ -7,6 +7,7 @@ jobs:
             LC_ALL: C.UTF-8
             LANG: C.UTF-8
         steps:
+            - checkout
             - run:
                 name: install pre-dependencies
                 command: |
@@ -23,8 +24,6 @@ jobs:
                 name: run ganache
                 command: |
                   ganache-cli &
-
-            - checkout
 
             - run:
                 name: install dependencies
