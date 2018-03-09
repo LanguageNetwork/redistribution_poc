@@ -21,11 +21,7 @@ jobs:
                     npm install ganache-cli truffle -g
 
             - run:
-                name: run ganache
+                name: run test
                 command: |
                   ganache-cli &
-
-            - run:
-                name: install dependencies
-                command: |
-                    truffle test
+                  truffle test
