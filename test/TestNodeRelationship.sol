@@ -26,7 +26,6 @@ contract TestNodeRelationship {
         address expected = tx.origin;
 
         Assert.equal(value, expected, "Constructor Testing");
-
     }
 
     function testGetDataSetCount() public {
@@ -96,5 +95,4 @@ contract TestNodeRelationship {
         result = node.deleteRawData(testRawDataId);
         Assert.equal(result, true, "deleteRawData() should return true");
     }
-
 }
