@@ -63,6 +63,16 @@ contract NodeRelationship {
         return rawDataList[rawDataStructs[rawDataId].rawDataListPointer] == rawDataId;
     }
 
+    function getOwnerOfDataSet(bytes32 dataSetId) public view returns (address ) {
+        require(isDataSet(dataSetId));
+        return dataSetStructs[dataSetId].owner;
+    }
+
+    function getOwnerOfRawData(bytes32 rawDataId) public view returns (address ) {
+        require(isRawData(rawDataId));
+        return rawDataStructs[rawDataId].owner;
+    }
+
 
     function getDataSetRawDataIdCount(bytes32 dataSetId) public view returns (uint rawDataCount) {
         require(isDataSet(dataSetId));
