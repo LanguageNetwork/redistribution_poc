@@ -120,7 +120,7 @@ contract NodeRelationship {
         dataSetList.length--;
 
 
-        bytes32[] rawDataIds = dataSetStructs[dataSetId].rawDataIds;
+        bytes32[] memory rawDataIds = dataSetStructs[dataSetId].rawDataIds;
 
         // TODO: Should be refac. Too much gas consumption.
         for (uint i = 0; i < rawDataIds.length; i++) {
@@ -129,7 +129,7 @@ contract NodeRelationship {
             rowToDelete = rawDataStructs[iterRawDataId].dataSetIdPointers[dataSetId];
 
             // Temporary point for rawDataIds
-            bytes32[] dataSetIds = rawDataStructs[iterRawDataId].dataSetIds;
+            bytes32[] memory dataSetIds = rawDataStructs[iterRawDataId].dataSetIds;
             keyToMove = dataSetIds[dataSetIds.length - 1];
 
             rawDataStructs[iterRawDataId].dataSetIds[rowToDelete] = keyToMove;
@@ -153,7 +153,7 @@ contract NodeRelationship {
         rawDataStructs[rawDataId].rawDataListPointer = rowToDelete;
         rawDataList.length--;
 
-        bytes32[] dataSetIds = rawDataStructs[rawDataId].dataSetIds;
+        bytes32[] memory dataSetIds = rawDataStructs[rawDataId].dataSetIds;
 
         // TODO: Should be refac. Too much gas consumption.
         for (uint i = 0; i < dataSetIds.length; i++) {
@@ -161,7 +161,7 @@ contract NodeRelationship {
             rowToDelete = dataSetStructs[iterDataSetId].rawDataIdPointers[rawDataId];
 
             // Temporary point for rawDataIds
-            bytes32[] rawDataIds = dataSetStructs[iterDataSetId].rawDataIds;
+            bytes32[] memory rawDataIds = dataSetStructs[iterDataSetId].rawDataIds;
             keyToMove = rawDataIds[rawDataIds.length - 1];
 
             dataSetStructs[iterDataSetId].rawDataIds[rowToDelete] = keyToMove;
