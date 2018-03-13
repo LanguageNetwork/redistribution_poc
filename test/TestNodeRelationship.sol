@@ -14,8 +14,6 @@ contract TestNodeRelationship {
     bytes32 testDataSetId = "test_dataset_id";
     bytes32 testRawDataId = "test_raw_data_id";
 
-    event Logging(address asdf);
-
     function testTruffleTest() public {
         uint expected = 1000;
 
@@ -60,11 +58,11 @@ contract TestNodeRelationship {
         result = node.isDataSet("wrong_dataset_id");
         Assert.equal(result, false, "isDataSet() should return false with invalid dataset id");
     }
-    
+
     function testAddRawData() public {
         NodeRelationship node = new NodeRelationship();
         bool result;
-        
+
         result = node.createRawData(testRawDataId);
         Assert.equal(result, true, "createRawData() should return true");
 
@@ -73,6 +71,30 @@ contract TestNodeRelationship {
 
         result = node.isRawData("wrong_dataset_id");
         Assert.equal(result, false, "isRawData() should return false with invalid dataset id");
-        
     }
+
+    function testCreateDeleteDataSet() public {
+        NodeRelationship node = new NodeRelationship();
+        bool result;
+
+        // Dataset creation
+        result = node.createDataSet(testDataSetId);
+        Assert.equal(result, true, "createDataSet() should return true");
+
+        result = node.deleteDataSet(testDataSetId);
+        Assert.equal(result, true, "deleteDataSet() should return true");
+    }
+
+    function testCreateDeleteRawData() public {
+        NodeRelationship node = new NodeRelationship();
+        bool result;
+
+        // RawData creation
+        result = node.createRawData(testRawDataId);
+        Assert.equal(result, true, "createRawData() should return true");
+
+        result = node.deleteRawData(testRawDataId);
+        Assert.equal(result, true, "deleteRawData() should return true");
+    }
+
 }
