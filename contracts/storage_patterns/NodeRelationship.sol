@@ -13,10 +13,6 @@ contract NodeRelationship {
         owner = msg.sender;
     }
 
-    // For zero_state comparison
-    bytes32 zero_state;
-
-
     // Dataset struct
     struct DataSet {
         address owner;
