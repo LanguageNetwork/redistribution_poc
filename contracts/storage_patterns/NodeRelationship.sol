@@ -45,9 +45,9 @@ contract NodeRelationship {
     event LogRawDataRelationshipDeleted(address sender, bytes32 rawDataId, bytes32 dataSetId);
 
 
-    function getDataSetCount() public view returns (uint dataSetCount) {return dataSetList.length;}
+    function getDataSetCount() public view returns (uint) {return dataSetList.length;}
 
-    function getRawDataCount() public view returns (uint rawDataCount){return rawDataList.length;}
+    function getRawDataCount() public view returns (uint) {return rawDataList.length;}
 
     function isDataSet(bytes32 dataSetId) public view returns (bool isIndeed) {
         if (dataSetList.length == 0) return false;
@@ -59,23 +59,23 @@ contract NodeRelationship {
         return rawDataList[rawDataStructs[rawDataId].rawDataListPointer] == rawDataId;
     }
 
-    function getOwnerOfDataSet(bytes32 dataSetId) public view returns (address ) {
+    function getOwnerOfDataSet(bytes32 dataSetId) public view returns (address) {
         require(isDataSet(dataSetId));
         return dataSetStructs[dataSetId].owner;
     }
 
-    function getOwnerOfRawData(bytes32 rawDataId) public view returns (address ) {
+    function getOwnerOfRawData(bytes32 rawDataId) public view returns (address) {
         require(isRawData(rawDataId));
         return rawDataStructs[rawDataId].owner;
     }
 
 
-    function getDataSetRawDataIdCount(bytes32 dataSetId) public view returns (uint rawDataCount) {
+    function getChildRawDataCount(bytes32 dataSetId) public view returns (uint rawDataCount) {
         require(isDataSet(dataSetId));
         return dataSetStructs[dataSetId].rawDataIds.length;
     }
 
-    function getRawDataDataSetIdCount(bytes32 rawDataId) public view returns (uint dataSetCount) {
+    function getChildDataSetCount(bytes32 rawDataId) public view returns (uint dataSetCount) {
         require(isRawData(rawDataId));
         return rawDataStructs[rawDataId].dataSetIds.length;
     }
