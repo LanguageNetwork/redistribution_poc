@@ -97,5 +97,10 @@ contract TestNodeRelationship {
         // Before create
         Assert.equal(node.getChildRawDataCount(testDataSetId), 1, "After make relationship, getChildRawDataCount() should return 1");
         Assert.equal(node.getChildDataSetCount(testRawDataId), 1, "After make relationship, getChildDataSetCount() should return 1");
+
+        // Delete Child
+        Assert.equal(node.deleteRawData(testRawDataId), true, "deleteRawData() should return true");
+        Assert.equal(node.getChildRawDataCount(testDataSetId), 0, "After delete child node, getChildRawDataCount() should return 0");
+
     }
 }

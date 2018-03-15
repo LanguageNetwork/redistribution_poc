@@ -116,7 +116,6 @@ contract NodeRelationship {
 
     function deleteDataSet(bytes32 dataSetId) public returns (bool success) {
         require(isDataSet(dataSetId));
-        require(!(dataSetStructs[dataSetId].rawDataIds.length > 0));
 
         uint rowToDelete = dataSetStructs[dataSetId].DataSetPointer;
         bytes32 keyToMove = dataSetList[dataSetList.length - 1];
@@ -151,7 +150,6 @@ contract NodeRelationship {
 
     function deleteRawData(bytes32 rawDataId) public returns (bool success) {
         require(isRawData(rawDataId));
-        require(!(rawDataStructs[rawDataId].dataSetIds.length > 0));
 
         uint rowToDelete = rawDataStructs[rawDataId].rawDataListPointer;
         bytes32 keyToMove = rawDataList[rawDataList.length - 1];
