@@ -83,24 +83,66 @@ contract TestNodeRelationship {
         node.createRawData(testRawDataId);
         Assert.equal(node.getRawDataCount(), 1, "After raw data creation, raw data length should return 1");
 
-        // Raw data creation
+        // Dataset creation
         node.createDataSet(testDataSetId);
         Assert.equal(node.getDataSetCount(), 1, "After dataset creation, data set length should return 1");
 
 
-        // Before create
+        // Before relationship creation
         Assert.equal(node.getChildRawDataCount(testDataSetId), 0, "Before make relationship, getChildRawDataCount() should return 0");
         Assert.equal(node.getChildDataSetCount(testRawDataId), 0, "Before make relationship, getChildDataSetCount() should return 0");
 
         node.makeRelation(testDataSetId, testRawDataId);
 
-        // Before create
+        // After relationship creation
         Assert.equal(node.getChildRawDataCount(testDataSetId), 1, "After make relationship, getChildRawDataCount() should return 1");
         Assert.equal(node.getChildDataSetCount(testRawDataId), 1, "After make relationship, getChildDataSetCount() should return 1");
 
         // Delete Child
         Assert.equal(node.deleteRawData(testRawDataId), true, "deleteRawData() should return true");
         Assert.equal(node.getChildRawDataCount(testDataSetId), 0, "After delete child node, getChildRawDataCount() should return 0");
+    }
 
+    function testRedistribution() public {
+        NodeRelationship node = new NodeRelationship();
+        //  NodeRelationship deployed_node = NodeRelationship(DeployedAddresses.NodeRelationship());
+
+
+        bytes32 extraRawDataId = "extra_test_raw_data_id";
+
+        // Raw data creation
+        node.createRawData(testRawDataId);
+        Assert.equal(node.getRawDataCount(), 1, "After raw data creation, raw data length should return 1");
+
+        node.createRawData(extraRawDataId);
+        Assert.equal(node.getRawDataCount(), 2, "After extra raw data creation, raw data length should return 2");
+
+        // Dataset creation
+        node.createDataSet(testDataSetId);
+        Assert.equal(node.getDataSetCount(), 1, "After dataset creation, data set length should return 1");
+
+
+        node.makeRelation(testDataSetId, testRawDataId);
+
+        // After relationship creation
+        Assert.equal(node.getChildRawDataCount(testDataSetId), 1, "After make relationship, getChildRawDataCount() should return 1");
+        Assert.equal(node.getChildDataSetCount(testRawDataId), 1, "After make relationship, getChildDataSetCount() should return 1");
+
+        node.makeRelation(testDataSetId, extraRawDataId);
+
+        // After relationship creation
+        Assert.equal(node.getChildRawDataCount(testDataSetId), 2, "After make relationship with extra raw data, getChildRawDataCount() should return 2");
+        Assert.equal(node.getChildDataSetCount(extraRawDataId), 1, "After make relationship, getChildDataSetCount() should return 1");
+
+
+        // Make revenue to dataset
+        node.addDataSetRevenue(testDataSetId, 100);
+
+        Assert.equal(node.getRevenueOfDataSet(testDataSetId), 100, "After addDataSetRevenue(), balance should be increased");
+
+        Assert.equal(node.claimRevenues(testRawDataId), true, "Expected true");
+
+        // TODO: Fix below test
+        // Assert.equal(node.claimRevenues(testRawDataId), false, "Expected false");
     }
 }

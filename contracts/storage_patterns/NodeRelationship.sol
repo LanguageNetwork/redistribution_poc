@@ -9,6 +9,14 @@ contract NodeRelationship {
 
     address public owner;
 
+    // For manage account and balance
+    mapping(address => uint) account;
+
+    function myBalance() public view returns (uint) {
+        return account[msg.sender];
+    }
+
+
     function NodeRelationship() public {// constructor
         owner = msg.sender;
     }
@@ -19,11 +27,12 @@ contract NodeRelationship {
         uint DataSetPointer;
         bytes32[] rawDataIds;
         mapping(bytes32 => uint) rawDataIdPointers;
+
+        uint revenue;
     }
 
     mapping(bytes32 => DataSet) public dataSetStructs;
     bytes32[] public dataSetList;
-
 
     // Raw data struct
     struct RawData {
@@ -31,6 +40,10 @@ contract NodeRelationship {
         uint rawDataListPointer;
         bytes32[] dataSetIds;
         mapping(bytes32 => uint) dataSetIdPointers;
+
+        // distribution
+        uint revenue;
+        mapping(bytes32 => uint) withdrawn;
     }
 
     mapping(bytes32 => RawData) public rawDataStructs;
@@ -43,6 +56,11 @@ contract NodeRelationship {
     event LogRawDataDeleted(address sender, bytes32 rawDataId);
     event LogDataSetRelationshipDeleted(address sender, bytes32 dataSetId, bytes32 rawDataId);
     event LogRawDataRelationshipDeleted(address sender, bytes32 rawDataId, bytes32 dataSetId);
+
+
+    function getRevenueOfDataSet(bytes32 dataSetId) external view returns (uint) {return dataSetStructs[dataSetId].revenue;}
+
+    function getRevenueOfRawData(bytes32 rawDataId) external view returns (uint) {return rawDataStructs[rawDataId].revenue;}
 
 
     function getDataSetCount() public view returns (uint) {return dataSetList.length;}
@@ -180,5 +198,49 @@ contract NodeRelationship {
         return true;
     }
 
+
+    // Functions for distribution
+    function addDataSetRevenue(bytes32 dataSetId, uint amount) public returns (bool) {
+        require(isDataSet(dataSetId));
+        dataSetStructs[dataSetId].revenue += amount;
+
+        return true;
+    }
+
+    function claimRevenues(bytes32 rawDataId) public returns (bool isUpdated) {
+        // returns true or false depending on whether balance has been updated
+
+        // require(isRawData(rawDataId) && rawDataStructs[rawDataId].owner == msg.sender);
+
+        require(isRawData(rawDataId));
+        // TODO: Remove this line, un-comment above line
+
+        RawData storage data = rawDataStructs[rawDataId];
+        uint beforeBalance = account[data.owner];
+
+        for (uint i = 0; i < data.dataSetIds.length; i++) {
+            // Temporary save dataset id
+            bytes32 dsId = data.dataSetIds[i];
+
+            account[data.owner] += (dataSetStructs[dsId].revenue / getChildRawDataCount(dsId) - data.withdrawn[dsId]);
+        }
+        return !(beforeBalance == account[data.owner]);
+    }
+
+    function claimRevenue(bytes32 rawDataId, bytes32 dataSetId) public returns (bool isUpdated) {
+        // returns true or false depending on whether balance has been updated
+
+        // require(isRawData(rawDataId) && rawDataStructs[rawDataId].owner == msg.sender);
+
+        require(isRawData(rawDataId));
+        // TODO: Remove this line, un-comment above line
+
+        RawData storage data = rawDataStructs[rawDataId];
+        uint beforeBalance = account[data.owner];
+
+        account[data.owner] += (dataSetStructs[dataSetId].revenue / getChildRawDataCount(dataSetId) - data.withdrawn[dataSetId]);
+
+        return !(beforeBalance == account[data.owner]);
+    }
 }
 
