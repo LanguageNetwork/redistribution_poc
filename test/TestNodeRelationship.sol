@@ -22,91 +22,81 @@ contract TestNodeRelationship {
 
     function testConstructor() public {
         NodeRelationship node = NodeRelationship(DeployedAddresses.NodeRelationship());
-        address value = node.owner();
-        address expected = tx.origin;
 
-        Assert.equal(value, expected, "Constructor Testing");
+        Assert.equal(node.owner(), tx.origin, "Constructor Testing");
     }
 
     function testGetDataSetCount() public {
         NodeRelationship node = new NodeRelationship();
-        uint value = node.getDataSetCount();
-        uint expected = 0;
 
-        Assert.equal(value, expected, "getDataSetCount() should return 0 at start");
+        Assert.equal(node.getDataSetCount(), 0, "getDataSetCount() should return 0 at start");
     }
 
     function testGetRawDataCount() public {
         NodeRelationship node = new NodeRelationship();
-        uint value = node.getRawDataCount();
-        uint expected = 0;
 
-        Assert.equal(value, expected, "getRawDataCount() should return 0 at start");
+        Assert.equal(node.getRawDataCount(), 0, "getRawDataCount() should return 0 at start");
     }
 
     function testAddDataSet() public {
         NodeRelationship node = new NodeRelationship();
-        bool result;
 
-        result = node.createDataSet(testDataSetId);
-        Assert.equal(result, true, "createDataSet() should return true");
-
-        result = node.isDataSet(testDataSetId);
-        Assert.equal(result, true, "isDataSet() should return true with valid dataset id");
-
-        result = node.isDataSet("wrong_dataset_id");
-        Assert.equal(result, false, "isDataSet() should return false with invalid dataset id");
+        Assert.equal(node.createDataSet(testDataSetId), true, "createDataSet() should return true");
+        Assert.equal(node.isDataSet(testDataSetId), true, "isDataSet() should return true with valid dataset id");
+        Assert.equal(node.isDataSet("wrong_dataset_id"), false, "isDataSet() should return false with invalid dataset id");
     }
 
     function testAddRawData() public {
         NodeRelationship node = new NodeRelationship();
-        bool result;
 
-        result = node.createRawData(testRawDataId);
-        Assert.equal(result, true, "createRawData() should return true");
-
-        result = node.isRawData(testRawDataId);
-        Assert.equal(result, true, "isRawData() should return true with valid dataset id");
-
-        result = node.isRawData("wrong_dataset_id");
-        Assert.equal(result, false, "isRawData() should return false with invalid dataset id");
+        Assert.equal(node.createRawData(testRawDataId), true, "createRawData() should return true");
+        Assert.equal(node.isRawData(testRawDataId), true, "isRawData() should return true with valid dataset id");
+        Assert.equal(node.isRawData("wrong_dataset_id"), false, "isRawData() should return false with invalid dataset id");
     }
 
     function testCreateDeleteDataSet() public {
         NodeRelationship node = new NodeRelationship();
-        uint length;
-        bool result;
 
         // Dataset creation
-        result = node.createDataSet(testDataSetId);
-        Assert.equal(result, true, "createDataSet() should return true");
+        Assert.equal(node.createDataSet(testDataSetId), true, "createDataSet() should return true");
+        Assert.equal(node.getDataSetCount(), 1, "After creation, dataset length should return 1");
 
-        length = node.getDataSetCount();
-        Assert.equal(length, 1, "After create, dataset length should be 1");
-
-        result = node.deleteDataSet(testDataSetId);
-        Assert.equal(result, true, "deleteDataSet() should return true");
-
-        length = node.getDataSetCount();
-        Assert.equal(length, 0, "After delete, dataset length should be 0");
+        Assert.equal(node.deleteDataSet(testDataSetId), true, "deleteDataSet() should return true");
+        Assert.equal(node.getDataSetCount(), 0, "After deletion, dataset length should return 0");
     }
 
     function testCreateDeleteRawData() public {
         NodeRelationship node = new NodeRelationship();
-        uint length;
-        bool result;
 
         // RawData creation
-        result = node.createRawData(testRawDataId);
-        Assert.equal(result, true, "createRawData() should return true");
+        Assert.equal(node.createRawData(testRawDataId), true, "createRawData() should return true");
+        Assert.equal(node.getRawDataCount(), 1, "After creation, raw data length should return 1");
 
-        length = node.getRawDataCount();
-        Assert.equal(length, 1, "After create, raw data length should be 1");
+        Assert.equal(node.deleteRawData(testRawDataId), true, "deleteRawData() should return true");
+        Assert.equal(node.getRawDataCount(), 0, "After deletion, raw data length should return 0");
+    }
 
-        result = node.deleteRawData(testRawDataId);
-        Assert.equal(result, true, "deleteRawData() should return true");
+    function testRelationshipCreateDelete() public {
+        NodeRelationship node = new NodeRelationship();
 
-        length = node.getRawDataCount();
-        Assert.equal(length, 0, "After delete, raw data length should be 0");
+        // Raw data creation
+        node.createRawData(testRawDataId);
+        Assert.equal(node.getRawDataCount(), 1, "After raw data creation, raw data length should return 1");
+
+        // Raw data creation
+        node.createDataSet(testDataSetId);
+        Assert.equal(node.getDataSetCount(), 1, "After dataset creation, data set length should return 1");
+
+
+        // Before create
+        Assert.equal(node.getChildRawDataCount(testDataSetId), 0, "Before make relationship, getChildRawDataCount() should return 0");
+        Assert.equal(node.getChildDataSetCount(testRawDataId), 0, "Before make relationship, getChildDataSetCount() should return 0");
+
+        node.makeRelation(testDataSetId, testRawDataId);
+
+        // Before create
+        Assert.equal(node.getChildRawDataCount(testDataSetId), 1, "After make relationship, getChildRawDataCount() should return 1");
+        Assert.equal(node.getChildDataSetCount(testRawDataId), 1, "After make relationship, getChildDataSetCount() should return 1");
+
     }
 }
