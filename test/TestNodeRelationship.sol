@@ -74,25 +74,39 @@ contract TestNodeRelationship {
 
     function testCreateDeleteDataSet() public {
         NodeRelationship node = new NodeRelationship();
+        uint length;
         bool result;
 
         // Dataset creation
         result = node.createDataSet(testDataSetId);
         Assert.equal(result, true, "createDataSet() should return true");
 
+        length = node.getDataSetCount();
+        Assert.equal(length, 1, "After create, dataset length should be 1");
+
         result = node.deleteDataSet(testDataSetId);
         Assert.equal(result, true, "deleteDataSet() should return true");
+
+        length = node.getDataSetCount();
+        Assert.equal(length, 0, "After delete, dataset length should be 0");
     }
 
     function testCreateDeleteRawData() public {
         NodeRelationship node = new NodeRelationship();
+        uint length;
         bool result;
 
         // RawData creation
         result = node.createRawData(testRawDataId);
         Assert.equal(result, true, "createRawData() should return true");
 
+        length = node.getRawDataCount();
+        Assert.equal(length, 1, "After create, raw data length should be 1");
+
         result = node.deleteRawData(testRawDataId);
         Assert.equal(result, true, "deleteRawData() should return true");
+
+        length = node.getRawDataCount();
+        Assert.equal(length, 0, "After delete, raw data length should be 0");
     }
 }
