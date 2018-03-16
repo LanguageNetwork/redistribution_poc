@@ -214,12 +214,16 @@ contract NodeRelationship {
 
         RawData storage data = rawDataStructs[rawDataId];
         uint beforeBalance = account[data.owner];
+        uint sumAmount;
 
         for (uint i = 0; i < data.dataSetIds.length; i++) {
             // Temporary save dataset id
             bytes32 dsId = data.dataSetIds[i];
 
-            account[data.owner] += (dataSetStructs[dsId].revenue / getChildRawDataCount(dsId) - data.withdrawn[dsId]);
+            sumAmount = (dataSetStructs[dsId].revenue / getChildRawDataCount(dsId) - data.withdrawn[dsId]);
+
+            account[data.owner] += sumAmount;
+            data.withdrawn[dsId] += sumAmount;
         }
         return !(beforeBalance == account[data.owner]);
     }
@@ -231,8 +235,11 @@ contract NodeRelationship {
 
         RawData storage data = rawDataStructs[rawDataId];
         uint beforeBalance = account[data.owner];
+        uint sumAmount;
 
-        account[data.owner] += (dataSetStructs[dataSetId].revenue / getChildRawDataCount(dataSetId) - data.withdrawn[dataSetId]);
+        sumAmount = (dataSetStructs[dataSetId].revenue / getChildRawDataCount(dataSetId) - data.withdrawn[dataSetId]);
+        account[data.owner] += sumAmount;
+        data.withdrawn[dataSetId] += sumAmount;
 
         return !(beforeBalance == account[data.owner]);
     }

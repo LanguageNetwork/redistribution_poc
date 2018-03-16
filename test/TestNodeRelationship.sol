@@ -142,7 +142,6 @@ contract TestNodeRelationship {
 
         Assert.equal(node.claimRevenues(testRawDataId), true, "Expected true");
 
-        // TODO: Fix below test
-        // Assert.equal(node.claimRevenues(testRawDataId), false, "Expected false");
+        Assert.equal(node.claimRevenues(testRawDataId), false, "Expected false");
     }
 }
