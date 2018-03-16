@@ -228,6 +228,21 @@ contract NodeRelationship {
         return !(beforeBalance == account[data.owner]);
     }
 
+    function viewRevenues(bytes32 rawDataId) public view returns (uint) {
+        require(isRawData(rawDataId) && rawDataStructs[rawDataId].owner == msg.sender);
+
+        RawData storage data = rawDataStructs[rawDataId];
+        uint sumAmount;
+
+        for (uint i = 0; i < data.dataSetIds.length; i++) {
+            // Temporary save dataset id
+            bytes32 dsId = data.dataSetIds[i];
+
+            sumAmount += (dataSetStructs[dsId].revenue / getChildRawDataCount(dsId) - data.withdrawn[dsId]);
+        }
+        return sumAmount;
+    }
+
     function claimRevenue(bytes32 rawDataId, bytes32 dataSetId) public returns (bool isUpdated) {
         // returns true or false depending on whether balance has been updated
 
@@ -243,5 +258,10 @@ contract NodeRelationship {
 
         return !(beforeBalance == account[data.owner]);
     }
-}
 
+    function viewRevenue(bytes32 rawDataId, bytes32 dataSetId) public view returns (uint) {
+        require(isRawData(rawDataId) && rawDataStructs[rawDataId].owner == msg.sender);
+
+        return (dataSetStructs[dataSetId].revenue / getChildRawDataCount(dataSetId) - rawDataStructs[rawDataId].withdrawn[dataSetId]);
+    }
+}
