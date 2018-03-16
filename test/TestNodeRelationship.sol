@@ -38,7 +38,7 @@ contract TestNodeRelationship {
         Assert.equal(node.getRawDataCount(), 0, "getRawDataCount() should return 0 at start");
     }
 
-    function testAddDataSet() public {
+    function testCheckDataSet() public {
         NodeRelationship node = new NodeRelationship();
 
         Assert.equal(node.createDataSet(testDataSetId), true, "createDataSet() should return true");
@@ -46,7 +46,7 @@ contract TestNodeRelationship {
         Assert.equal(node.isDataSet("wrong_dataset_id"), false, "isDataSet() should return false with invalid dataset id");
     }
 
-    function testAddRawData() public {
+    function testCheckRawData() public {
         NodeRelationship node = new NodeRelationship();
 
         Assert.equal(node.createRawData(testRawDataId), true, "createRawData() should return true");
@@ -54,7 +54,7 @@ contract TestNodeRelationship {
         Assert.equal(node.isRawData("wrong_dataset_id"), false, "isRawData() should return false with invalid dataset id");
     }
 
-    function testCreateDeleteDataSet() public {
+    function testDataSet() public {
         NodeRelationship node = new NodeRelationship();
 
         // Dataset creation
@@ -65,7 +65,7 @@ contract TestNodeRelationship {
         Assert.equal(node.getDataSetCount(), 0, "After deletion, dataset length should return 0");
     }
 
-    function testCreateDeleteRawData() public {
+    function testRawData() public {
         NodeRelationship node = new NodeRelationship();
 
         // RawData creation
@@ -76,7 +76,7 @@ contract TestNodeRelationship {
         Assert.equal(node.getRawDataCount(), 0, "After deletion, raw data length should return 0");
     }
 
-    function testRelationshipCreateDelete() public {
+    function testRelationship() public {
         NodeRelationship node = new NodeRelationship();
 
         // Raw data creation
@@ -140,8 +140,10 @@ contract TestNodeRelationship {
 
         Assert.equal(node.getRevenueOfDataSet(testDataSetId), 100, "After addDataSetRevenue(), balance should be increased");
 
+        Assert.equal(node.viewRevenues(testRawDataId), 50, "Expected 50");
         Assert.equal(node.claimRevenues(testRawDataId), true, "Expected true");
 
+        Assert.equal(node.viewRevenues(testRawDataId), 0, "Expected 0");
         Assert.equal(node.claimRevenues(testRawDataId), false, "Expected false");
     }
 }
