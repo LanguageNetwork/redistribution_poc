@@ -210,10 +210,7 @@ contract NodeRelationship {
     function claimRevenues(bytes32 rawDataId) public returns (bool isUpdated) {
         // returns true or false depending on whether balance has been updated
 
-        // require(isRawData(rawDataId) && rawDataStructs[rawDataId].owner == msg.sender);
-
-        require(isRawData(rawDataId));
-        // TODO: Remove this line, un-comment above line
+        require(isRawData(rawDataId) && rawDataStructs[rawDataId].owner == msg.sender);
 
         RawData storage data = rawDataStructs[rawDataId];
         uint beforeBalance = account[data.owner];
@@ -230,10 +227,7 @@ contract NodeRelationship {
     function claimRevenue(bytes32 rawDataId, bytes32 dataSetId) public returns (bool isUpdated) {
         // returns true or false depending on whether balance has been updated
 
-        // require(isRawData(rawDataId) && rawDataStructs[rawDataId].owner == msg.sender);
-
-        require(isRawData(rawDataId));
-        // TODO: Remove this line, un-comment above line
+        require(isRawData(rawDataId) && rawDataStructs[rawDataId].owner == msg.sender);
 
         RawData storage data = rawDataStructs[rawDataId];
         uint beforeBalance = account[data.owner];
