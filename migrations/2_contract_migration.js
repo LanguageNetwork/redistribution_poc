@@ -1,4 +1,4 @@
-var NodeRelationship = artifacts.require("./storage_patterns/NodeRelationship.sol");
+var NodeRelationship = artifacts.require("./NodeRelationship.sol");
 
 module.exports = function(deployer, network) {
     console.log(network);

@@ -5,7 +5,7 @@ import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
 
 // Our contract
-import "../contracts/storage_patterns/NodeRelationship.sol";
+import "../contracts/NodeRelationship.sol";
 
 // Type import
 
