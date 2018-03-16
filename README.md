@@ -1,9 +1,11 @@
-# redistribution poc 
+# redistribution_poc 
 [![CircleCI](https://circleci.com/gh/LanguageNetwork/redistribution_poc/tree/master.svg?style=svg)](https://circleci.com/gh/LanguageNetwork/redistribution_poc/tree/master) 
 
 POC code for token redistribution 
 
 ## Install dependencies
+
+For OS X, you can use `brew` as well
 ```bash
 $ apt install nodejs // Recommand nodejs >= 8.x.x
 $ npm install truffle ganache-cli -g
