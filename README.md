@@ -1,4 +1,4 @@
-# redistribution_poc 
+# redistribution poc 
 [![CircleCI](https://circleci.com/gh/LanguageNetwork/redistribution_poc/tree/master.svg?style=svg)](https://circleci.com/gh/LanguageNetwork/redistribution_poc/tree/master) 
 
 POC code for token redistribution 
