@@ -104,7 +104,9 @@ contract NodeRelationship {
         require(!isDataSet(dataSetId));
         dataSetStructs[dataSetId].owner = msg.sender;
         dataSetStructs[dataSetId].DataSetPointer = dataSetList.push(dataSetId) - 1;
+
         LogNewDataSet(msg.sender, dataSetId);
+
         return true;
     }
 
@@ -112,12 +114,10 @@ contract NodeRelationship {
         require(!isRawData(rawDataId));
         rawDataStructs[rawDataId].owner = msg.sender;
         rawDataStructs[rawDataId].rawDataListPointer = rawDataList.push(rawDataId) - 1;
-        LogNewRawData(msg.sender, rawDataId);
-        return true;
 
-        // How to make relationship
-        // rawDataStructs[rawDataId].dataSetId = dataSetId;
-        // dataSetStructs[dataSetId].rawDataIdPointers[rawDataId] = dataSetStructs[dataSetId].rawDataIds.push(rawDataId) - 1;
+        LogNewRawData(msg.sender, rawDataId);
+
+        return true;
     }
 
     function makeRelation(bytes32 dataSetId, bytes32 rawDataId) public returns (bool success) {
@@ -127,6 +127,7 @@ contract NodeRelationship {
 
         rawDataStructs[rawDataId].dataSetIdPointers[dataSetId] = rawDataStructs[rawDataId].dataSetIds.push(dataSetId) - 1;
         dataSetStructs[dataSetId].rawDataIdPointers[rawDataId] = dataSetStructs[dataSetId].rawDataIds.push(rawDataId) - 1;
+
         return true;
     }
 
@@ -163,6 +164,7 @@ contract NodeRelationship {
         }
 
         LogDataSetDeleted(msg.sender, dataSetId);
+
         return true;
     }
 
